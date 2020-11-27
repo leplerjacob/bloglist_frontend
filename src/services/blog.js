@@ -6,9 +6,10 @@ const getAll = () => {
   return request.then((res) => res.data)
 }
 
-const createBlog = () => {
-  console.log('This runs')
-  return
+const createBlog = async (blog, user) => {
+  const request = axios.post(baseUrl, blog, {headers: {
+    "Authorization": "bearer " + user.token} })
+  return request.then(res => res.data)
 }
 
 export default { getAll, createBlog }

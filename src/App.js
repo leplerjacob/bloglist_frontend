@@ -1,6 +1,6 @@
 import './App.css'
 import React, { useState, useEffect } from 'react'
-import blogService from './services/blogs'
+import blogService from './services/blog'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import loginService from './services/login'
@@ -10,6 +10,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('')
+  const [url, setUrl] = useState('')
+  const [author, setAuthor] = useState('')
 
   useEffect(() => {
     blogService
@@ -24,7 +27,7 @@ const App = () => {
     e.preventDefault()
 
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
       setUser(user)
       setPassword('')
@@ -62,9 +65,34 @@ const App = () => {
     </form>
   )
 
+  const handleBlogEntry = async (e) => {
+    e.preventDefault()
+
+    try {
+      await blogService.createBlog({title, author, url}, user)
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const blogForm = () => (
+    <form onSubmit={handleBlogEntry}>
+      title:
+      <input type="text" value={title} onChange={({target}) => setTitle(target.value)}/>
+      author:
+      <input type="text" value={author} onChange={({target}) => setAuthor(target.value)}/>
+      url:
+      <input type="text" value={url} onChange={({target}) => setUrl(target.value)}/>
+      <button type="submit">Create Blog</button>
+    </form>
+  )
+
   return (
     <div className="front">
-      {user === null ? loginForm() : <BlogForm />}
+      {user === null ? loginForm() : blogForm()}
 
       <div>
         {blogs.map((blog) => (

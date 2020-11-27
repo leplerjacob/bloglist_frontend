@@ -7,7 +7,39 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+  word-break: break-all;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.front {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.card.blog {
+  margin: auto;
+  border: solid rgb(51, 51, 51) 1px;
+  border-radius: 2px;
+  background: rgb(201, 198, 198);
+  padding: 10px;
+  overflow: hidden;
+}
+
+form {
+  display:flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: solid rgb(51, 51, 51) 1px;
+  border-radius: 2px;
+  background: rgb(201, 198, 198);
+  padding: 10px;
+  overflow: hidden;
+  max-height: 400px;
 }

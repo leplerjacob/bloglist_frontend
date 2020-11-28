@@ -2,8 +2,8 @@ import './App.css'
 import React, { useState, useEffect } from 'react'
 import blogService from './services/blog'
 import Blog from './components/Blog'
-import BlogForm from './components/BlogForm'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,6 +13,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
+  const [notify, setNotify] = useState(null)
 
   useEffect(() => {
     blogService
@@ -26,8 +27,13 @@ const App = () => {
   const handleLogin = async (e) => {
     e.preventDefault()
 
+    console.log('The frontend login runs')
+
     try {
       const user = await loginService.login({ username, password })
+      console.log('Login Successful')
+      setNotify({ success: true, message: 'Login successful' })
+      notifyTimer()
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
       setUser(user)
       setPassword('')
@@ -37,6 +43,9 @@ const App = () => {
       }, 100000)
     } catch (err) {
       console.log(err)
+      console.log('Login Not Successful')
+      setNotify({ success: false, message: 'Invalid Credentials' })
+      notifyTimer()
     }
   }
 
@@ -69,35 +78,56 @@ const App = () => {
     e.preventDefault()
 
     try {
-      await blogService.createBlog({title, author, url}, user)
+      await blogService.createBlog({ title, author, url }, user)
       setTitle('')
       setAuthor('')
       setUrl('')
     } catch (err) {
-      console.log(err);
+      console.log(err)
     }
   }
 
   const blogForm = () => (
     <form onSubmit={handleBlogEntry}>
       title:
-      <input type="text" value={title} onChange={({target}) => setTitle(target.value)}/>
+      <input
+        type="text"
+        value={title}
+        onChange={({ target }) => setTitle(target.value)}
+      />
       author:
-      <input type="text" value={author} onChange={({target}) => setAuthor(target.value)}/>
+      <input
+        type="text"
+        value={author}
+        onChange={({ target }) => setAuthor(target.value)}
+      />
       url:
-      <input type="text" value={url} onChange={({target}) => setUrl(target.value)}/>
+      <input
+        type="text"
+        value={url}
+        onChange={({ target }) => setUrl(target.value)}
+      />
       <button type="submit">Create Blog</button>
     </form>
   )
 
-  return (
-    <div className="front">
-      {user === null ? loginForm() : blogForm()}
+  const notifyTimer = () => {
+    setTimeout(() => {
+      setNotify(null)
+    }, 5000)
+  }
 
-      <div>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
+  return (
+    <div>
+      {notify && <Notification props={notify} />}
+      <div className="front">
+        {user === null ? loginForm() : blogForm()}
+
+        <div>
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+        </div>
       </div>
     </div>
   )

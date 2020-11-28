@@ -43,3 +43,21 @@ form {
   overflow: hidden;
   max-height: 400px;
 }
+
+.notify.success {
+  background: green;
+  border: 1px solid;
+  padding: 5px;
+  width: 85vw;
+  height: auto;
+  margin: 0 auto;
+}
+
+.notify.failed {
+  background: red;
+  border: 1px solid;
+  padding: 5px;
+  width: 85vw;
+  height: auto;
+  margin: 0 auto;
+}

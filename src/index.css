@@ -44,20 +44,18 @@ form {
   max-height: 400px;
 }
 
-.notify.success {
-  background: green;
-  border: 1px solid;
-  padding: 5px;
+.notify {
+  border: 2px solid;
+  padding: 5px 10px;
   width: 85vw;
   height: auto;
   margin: 0 auto;
 }
 
+.notify.success {
+  background: green;
+}
+
 .notify.failed {
   background: red;
-  border: 1px solid;
-  padding: 5px;
-  width: 85vw;
-  height: auto;
-  margin: 0 auto;
 }

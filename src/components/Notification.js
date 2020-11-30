@@ -1,10 +1,8 @@
 import React from 'react'
 
 const Notification = ({props}) => {
-    console.log(props);
     const success = props.success
     const message = props.message
-    console.log("success:", success, "message: ", message);
 
     return (
       <div>

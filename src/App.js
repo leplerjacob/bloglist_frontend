@@ -1,21 +1,22 @@
 import './App.css'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import blogService from './services/blog'
 import Blog from './components/Blog'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const [author, setAuthor] = useState('')
   const [notify, setNotify] = useState(null)
-  const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
+
+  // Refs
+  const loginFormRef = useRef()
+  const toggleLoginForm = useRef()
+  const toggleBlogForm = useRef()
 
   useEffect(() => {
     blogService
@@ -26,31 +27,27 @@ const App = () => {
       })
   }, [])
 
-  const loginForm = () => {
-    return (
-      <Togglable buttonLabel="Login">
-        <LoginForm
-          username={username}
-          password={password}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-          handleSubmit={handleLogin}
-        />
-      </Togglable>
-    )
-  }
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      // blogService.setToken(user.token) Not used yet
+    }
+  }, [])
 
-  const handleLogin = async (e) => {
+  const handleLogin = ({ username, password }) => async (e) => {
     e.preventDefault()
 
+    
     try {
       const user = await loginService.login({ username, password })
       setNotify({ success: true, message: 'Login successful' })
       notifyTimer()
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
+      toggleLoginForm.current.toggleVisibility()
+      loginFormRef.current.resetCreds()
       setUser(user)
-      setPassword('')
-      setUsername('')
       setTimeout(() => {
         window.localStorage.clear()
       }, 100000)
@@ -61,19 +58,17 @@ const App = () => {
     }
   }
 
-  const handleBlogEntry = async (e) => {
+  const handleBlogEntry = (newBlog) => async (e) => {
     e.preventDefault()
 
     try {
-      const blog = await blogService.createBlog({ title, author, url }, user)
+      const blog = await blogService.createBlog(newBlog)
+      toggleBlogForm.current.toggleVisibility()
       setNotify({
         success: true,
         message: `New blog \"${blog.title}\" by ${blog.author} has been added`,
       })
       notifyTimer()
-      setTitle('')
-      setAuthor('')
-      setUrl('')
     } catch (err) {
       console.log(err)
       setNotify({
@@ -84,30 +79,6 @@ const App = () => {
     }
   }
 
-  const blogForm = () => (
-    <form onSubmit={handleBlogEntry}>
-      title:
-      <input
-        type="text"
-        value={title}
-        onChange={({ target }) => setTitle(target.value)}
-      />
-      author:
-      <input
-        type="text"
-        value={author}
-        onChange={({ target }) => setAuthor(target.value)}
-      />
-      url:
-      <input
-        type="text"
-        value={url}
-        onChange={({ target }) => setUrl(target.value)}
-      />
-      <button type="submit">Create Blog</button>
-      {logout()}
-    </form>
-  )
 
   const notifyTimer = () => {
     setTimeout(() => {
@@ -130,7 +101,15 @@ const App = () => {
     <div>
       {notify && <Notification props={notify} />}
       <div className="front">
-        {user === null ? loginForm() : blogForm()}
+        {user === null ? (
+          <Togglable buttonLabel="Login" ref={toggleLoginForm}>
+            <LoginForm handleSubmit={handleLogin} ref={loginFormRef}/>
+          </Togglable>
+        ) : (
+          <Togglable buttonLabel="New Blog" ref={toggleBlogForm}>
+            <BlogForm createBlog={handleBlogEntry} user={user} />
+          </Togglable>
+        )}
         <div>
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />

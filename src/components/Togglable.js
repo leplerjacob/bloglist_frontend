@@ -11,7 +11,8 @@ const Togglable = React.forwardRef((props, ref) => {
   }
 
   useImperativeHandle(ref, () => {
-    return toggleVisibility
+    // Remember to pass as an assigned object
+    return {toggleVisibility}
   })
 
   return (

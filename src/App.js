@@ -17,13 +17,6 @@ const App = () => {
   const toggleLoginForm = useRef()
   const toggleBlogForm = useRef()
 
-  console.log(
-    'togLoginForm.current:',
-    toggleLoginForm.current,
-    'togBlogForm',
-    toggleBlogForm.current
-  )
-
   useEffect(() => {
     blogService
       .getAll()
@@ -57,11 +50,8 @@ const App = () => {
   }
 
   const handleBlogEntry = (newBlog) => {
-    try {
-      toggleBlogForm.current.toggleVisibility()
-    } catch (err) {
-      console.log(err)
-    }
+    toggleBlogForm.current.toggleVisibility()
+    
     blogService
       .createBlog(newBlog, user)
       .then((blog) => {

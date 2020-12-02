@@ -25,6 +25,8 @@ code {
 
 .card.blog {
   margin: auto;
+  width: 450px;
+  max-width: 450px;
   border: solid rgb(51, 51, 51) 1px;
   border-radius: 2px;
   background: rgb(201, 198, 198);

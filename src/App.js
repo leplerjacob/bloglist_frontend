@@ -51,7 +51,7 @@ const App = () => {
 
   const handleBlogEntry = (newBlog) => {
     toggleBlogForm.current.toggleVisibility()
-    
+
     blogService
       .createBlog(newBlog, user)
       .then((blog) => {
@@ -66,6 +66,23 @@ const App = () => {
           success: false,
           message: 'An error occurred submitting blog',
         })
+        notifyTimer()
+      })
+  }
+
+  const handleBlogLike = (likedBlog) => {
+    console.log(likedBlog);
+    blogService
+      .updateBlogLikes(likedBlog, user)
+      .then((blog) => {
+        setNotify({
+          success: true,
+          message: `${user.username} has liked the blog: \"${blog.title}\"`,
+        })
+        notifyTimer()
+      })
+      .catch((err) => {
+        setNotify({ success: false, message: 'Blog like not successful' })
         notifyTimer()
       })
   }
@@ -97,20 +114,24 @@ const App = () => {
     )
   }
 
+  const blogForm = () => {
+    return (
+      <div>
+        <Togglable buttonLabel="New Blog" ref={toggleBlogForm}>
+          <BlogForm createBlog={handleBlogEntry} user={user} />
+        </Togglable>
+      </div>
+    )
+  }
+
   return (
     <div>
       {notify && <Notification props={notify} />}
       <div className="front">
-        {user === null ? (
-          loginForm()
-        ) : (
-          <Togglable buttonLabel="New Blog" ref={toggleBlogForm}>
-            <BlogForm createBlog={handleBlogEntry} user={user} />
-          </Togglable>
-        )}
+        {user === null ? loginForm() : blogForm()}
         <div>
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} addLike={handleBlogLike}/>
           ))}
         </div>
       </div>

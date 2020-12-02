@@ -22,6 +22,8 @@ const BlogForm = ({ createBlog, user }) => {
     setLikes('')
   }
 
+
+
   return (
     <form onSubmit={addBlog}>
       title:

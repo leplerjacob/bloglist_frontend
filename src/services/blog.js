@@ -18,4 +18,5 @@ const createBlog = async (blog, user) => {
   return request.then(res => res.data)
 }
 
+// eslint-disable-next-line
 export default { getAll, createBlog, setToken }

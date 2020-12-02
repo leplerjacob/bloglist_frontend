@@ -14,9 +14,15 @@ const App = () => {
   const [notify, setNotify] = useState(null)
 
   // Refs
-  const loginFormRef = useRef()
   const toggleLoginForm = useRef()
   const toggleBlogForm = useRef()
+
+  console.log(
+    'togLoginForm.current:',
+    toggleLoginForm.current,
+    'togBlogForm',
+    toggleBlogForm.current
+  )
 
   useEffect(() => {
     blogService
@@ -32,53 +38,47 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      // blogService.setToken(user.token) Not used yet
     }
   }, [])
 
-  const handleLogin = ({ username, password }) => async (e) => {
-    e.preventDefault()
-
-    
-    try {
-      const user = await loginService.login({ username, password })
-      setNotify({ success: true, message: 'Login successful' })
-      notifyTimer()
-      window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
-      toggleLoginForm.current.toggleVisibility()
-      loginFormRef.current.resetCreds()
-      setUser(user)
-      setTimeout(() => {
-        window.localStorage.clear()
-      }, 100000)
-    } catch (err) {
-      console.log(err)
-      setNotify({ success: false, message: 'Invalid Credentials' })
-      notifyTimer()
-    }
+  const handleLogin = (login) => {
+    loginService
+      .login(login)
+      .then((user) => {
+        setNotify({ success: true, message: 'Login successful' })
+        window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
+        setUser(user)
+        notifyTimer()
+      })
+      .catch((err) => {
+        setNotify({ success: false, message: 'Invalid Credentials' })
+        notifyTimer()
+      })
   }
 
-  const handleBlogEntry = (newBlog) => async (e) => {
-    e.preventDefault()
-
+  const handleBlogEntry = (newBlog) => {
     try {
-      const blog = await blogService.createBlog(newBlog)
       toggleBlogForm.current.toggleVisibility()
-      setNotify({
-        success: true,
-        message: `New blog \"${blog.title}\" by ${blog.author} has been added`,
-      })
-      notifyTimer()
     } catch (err) {
       console.log(err)
-      setNotify({
-        success: false,
-        message: 'An error occurred submitting blog',
-      })
-      notifyTimer()
     }
+    blogService
+      .createBlog(newBlog, user)
+      .then((blog) => {
+        setNotify({
+          success: true,
+          message: `New blog \"${blog.title}\" by ${blog.author} has been added`,
+        })
+        notifyTimer()
+      })
+      .catch((err) => {
+        setNotify({
+          success: false,
+          message: 'An error occurred submitting blog',
+        })
+        notifyTimer()
+      })
   }
-
 
   const notifyTimer = () => {
     setTimeout(() => {
@@ -97,14 +97,22 @@ const App = () => {
     return <button onClick={handleLogout}>Logout</button>
   }
 
+  const loginForm = () => {
+    return (
+      <div>
+        <Togglable buttonLabel="Login" ref={toggleLoginForm}>
+          <LoginForm handleSubmit={handleLogin} />
+        </Togglable>
+      </div>
+    )
+  }
+
   return (
     <div>
       {notify && <Notification props={notify} />}
       <div className="front">
         {user === null ? (
-          <Togglable buttonLabel="Login" ref={toggleLoginForm}>
-            <LoginForm handleSubmit={handleLogin} ref={loginFormRef}/>
-          </Togglable>
+          loginForm()
         ) : (
           <Togglable buttonLabel="New Blog" ref={toggleBlogForm}>
             <BlogForm createBlog={handleBlogEntry} user={user} />

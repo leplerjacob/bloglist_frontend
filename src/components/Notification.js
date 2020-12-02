@@ -4,6 +4,8 @@ const Notification = ({props}) => {
     const success = props.success
     const message = props.message
 
+    
+
     return (
       <div>
         {success ? (

@@ -1,22 +1,17 @@
-import React, { useState, useImperativeHandle } from 'react'
+import React, { useState } from 'react'
 
-const LoginForm = React.forwardRef((props, ref) => {
+const LoginForm = ({handleSubmit}) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const resetCreds = () => {
-    setUsername('')
-    setPassword('')
+  const submitLogin =(e) => {
+    e.preventDefault()
+    handleSubmit({username, password})
+    console.log("This runs");
   }
 
-// create seperate submitLogin function
-
-  useImperativeHandle(ref, () => {
-    return { resetCreds }
-  })
-
   return (
-    <form onSubmit={props.handleSubmit({ username, password })}>
+    <form onSubmit={submitLogin}>
       <h2>Login</h2>
       <div>
         username
@@ -39,6 +34,6 @@ const LoginForm = React.forwardRef((props, ref) => {
       <button type="submit">login</button>
     </form>
   )
-})
+}
 
 export default LoginForm

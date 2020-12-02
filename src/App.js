@@ -7,6 +7,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import blog from './services/blog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -51,7 +52,6 @@ const App = () => {
 
   const handleBlogEntry = (newBlog) => {
     toggleBlogForm.current.toggleVisibility()
-
     blogService
       .createBlog(newBlog, user)
       .then((blog) => {
@@ -71,7 +71,7 @@ const App = () => {
   }
 
   const handleBlogLike = (likedBlog) => {
-    console.log(likedBlog);
+    console.log()
     blogService
       .updateBlogLikes(likedBlog, user)
       .then((blog) => {
@@ -82,9 +82,10 @@ const App = () => {
         notifyTimer()
       })
       .catch((err) => {
-        setNotify({ success: false, message: 'Blog like not successful' })
+        setNotify({ success: false, message: 'Blog like not successful'})
         notifyTimer()
       })
+    
   }
 
   const notifyTimer = () => {
@@ -131,7 +132,7 @@ const App = () => {
         {user === null ? loginForm() : blogForm()}
         <div>
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} addLike={handleBlogLike}/>
+            <Blog key={blog.id} blog={blog} addLike={handleBlogLike} />
           ))}
         </div>
       </div>

@@ -22,7 +22,7 @@ const createBlog = async (blog, user) => {
 }
 
 const updateBlogLikes = async (blog, user) => {
-  const request = axios.put(baseUrl + `${blog.id}`, blog.likes, {
+  const request = axios.put(baseUrl + `/${blog.id}`, blog.likedBlog, {
     headers: { Authorization: 'bearer ' + user.token },
   })
   return request.then((res) => res.data)

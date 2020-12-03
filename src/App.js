@@ -55,6 +55,7 @@ const App = () => {
     blogService
       .createBlog(newBlog, user)
       .then((blog) => {
+        setBlogs(blogs.concat(blog))
         setNotify({
           success: true,
           message: `New blog \"${blog.title}\" by ${blog.author} has been added`,
@@ -71,21 +72,45 @@ const App = () => {
   }
 
   const handleBlogLike = (likedBlog) => {
-    console.log()
     blogService
       .updateBlogLikes(likedBlog, user)
-      .then((blog) => {
+      .then((updatedBlog) => {
         setNotify({
           success: true,
-          message: `${user.username} has liked the blog: \"${blog.title}\"`,
+          message: `${user.name} has liked the blog: \"${updatedBlog.title}\"`,
         })
         notifyTimer()
+        setBlogs(
+          blogs.map((blog) => {
+            if (blog.id === updatedBlog.id) {
+              return updatedBlog
+            }
+            return blog
+          })
+        )
       })
       .catch((err) => {
-        setNotify({ success: false, message: 'Blog like not successful'})
+        setNotify({ success: false, message: 'Blog like not successful' })
         notifyTimer()
       })
-    
+  }
+
+  const handleDeleteBlog = (blogToDelete) => {
+    const newSetOfBlogs = blogs.filter(blog => blog.id !== blogToDelete.id)
+    console.log(newSetOfBlogs);
+    blogService
+      .deleteBlog(blogToDelete, user)
+      .then((deletedBlog) => {
+        setNotify({ success: true, message: 'Blog successfully deleted' })
+        notifyTimer()
+        // setBlogs(blogs)
+        console.log(blogs);
+      })
+      .catch((err) => {
+        console.log(err)
+        setNotify({ success: false, message: 'Blog deletion unsuccessful' })
+        notifyTimer()
+      })
   }
 
   const notifyTimer = () => {
@@ -131,8 +156,8 @@ const App = () => {
       <div className="front">
         {user === null ? loginForm() : blogForm()}
         <div>
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} addLike={handleBlogLike} />
+          {blogs.sort((a,b)=>a.likes-b.likes).map((blog) => (
+            <Blog key={blog.id} blog={blog} addLike={handleBlogLike} deleteBlog={handleDeleteBlog}/>
           ))}
         </div>
       </div>

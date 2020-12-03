@@ -28,5 +28,12 @@ const updateBlogLikes = async (blog, user) => {
   return request.then((res) => res.data)
 }
 
+const deleteBlog = async (blog, user) => {
+  const request = axios.delete((baseUrl + `/${blog.id}`), {
+    headers: { Authorization: 'bearer ' + user.token },
+  })
+  return request.then(res => res.data)
+}
+
 // eslint-disable-next-line
-export default { getAll, createBlog, setToken, updateBlogLikes }
+export default { getAll, createBlog, setToken, updateBlogLikes, deleteBlog }

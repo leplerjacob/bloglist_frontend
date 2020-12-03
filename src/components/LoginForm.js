@@ -7,7 +7,6 @@ const LoginForm = ({handleSubmit}) => {
   const submitLogin =(e) => {
     e.preventDefault()
     handleSubmit({username, password})
-    console.log("This runs");
   }
 
   return (

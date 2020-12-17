@@ -4,25 +4,26 @@ const BlogForm = ({ createBlog, user }) => {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
-  const [likes, setLikes] = useState(null)
+  const [likes, setLikes] = useState('')
 
   const addBlog = (e) => {
     e.preventDefault()
 
-    createBlog({
-      title: title,
-      author: author,
-      url: url,
-      likes: likes,
-    }, user)
+    createBlog(
+      {
+        title: title,
+        author: author,
+        url: url,
+        likes: likes,
+      },
+      user
+    )
 
     setTitle('')
     setUrl('')
     setAuthor('')
-    setLikes(null)
+    setLikes('')
   }
-
-
 
   return (
     <form onSubmit={addBlog}>

@@ -1,5 +1,10 @@
 import axios from 'axios'
-const baseUrl = '/api/blogs'
+let baseUrl
+if(process.env.NODE_ENV) {
+  baseUrl = 'http://localhost:3003/api/blogs'
+} else {
+  baseUrl = '/api/blogs'
+}
 
 let token = null
 

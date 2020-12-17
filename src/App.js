@@ -7,7 +7,6 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
-import blog from './services/blog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -21,7 +20,12 @@ const App = () => {
   useEffect(() => {
     blogService
       .getAll()
-      .then((initialBlogs) => setBlogs(initialBlogs))
+      .then((initialBlogs) => {
+        // if(initialBlogs.length === 0){
+
+        // }
+        setBlogs(initialBlogs)
+      })
       .catch((err) => {
         console.log(err)
       })
@@ -55,6 +59,7 @@ const App = () => {
     blogService
       .createBlog(newBlog, user)
       .then((blog) => {
+        blog = {...blog, user: {username: user.username, id: blog.user}}
         setBlogs(blogs.concat(blog))
         setNotify({
           success: true,
@@ -96,15 +101,12 @@ const App = () => {
   }
 
   const handleDeleteBlog = (blogToDelete) => {
-    const newSetOfBlogs = blogs.filter(blog => blog.id !== blogToDelete.id)
-    console.log(newSetOfBlogs);
     blogService
       .deleteBlog(blogToDelete, user)
       .then((deletedBlog) => {
         setNotify({ success: true, message: 'Blog successfully deleted' })
         notifyTimer()
-        // setBlogs(blogs)
-        console.log(blogs);
+        setBlogs(blogs.filter((blog) => blog.id !== deletedBlog.id))
       })
       .catch((err) => {
         console.log(err)
@@ -156,9 +158,17 @@ const App = () => {
       <div className="front">
         {user === null ? loginForm() : blogForm()}
         <div>
-          {blogs.sort((a,b)=>a.likes-b.likes).map((blog) => (
-            <Blog key={blog.id} blog={blog} addLike={handleBlogLike} deleteBlog={handleDeleteBlog}/>
-          ))}
+          {blogs
+            .sort((a, b) => a.likes - b.likes)
+            .map((blog) => (
+              <Blog
+                user={user}
+                key={blog.id}
+                blog={blog}
+                addLike={handleBlogLike}
+                deleteBlog={handleDeleteBlog}
+              />
+            ))}
         </div>
       </div>
     </div>

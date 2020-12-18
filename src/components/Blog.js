@@ -48,16 +48,17 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
   }
 
   return (
-    <div className="card blog">
-      <h2>{blog.title}</h2><p>By: {blog.author}</p>
-      <button onClick={blogToggle}>{visible ? 'Hide' : 'Show'}</button>
-      <div style={visibleStyle}>
-        <p>URL: {blog.url}</p>
-        <p>Likes: {blog.likes}</p>
-        {likeButton()}
-        {deleteButton()}
+      <div className="card blog">
+        <h2>{blog.title}</h2>
+        <p>By: {blog.author}</p>
+        <button onClick={blogToggle}>{visible ? 'Hide' : 'Show'}</button>
+        <div style={visibleStyle}>
+          <p>URL: {blog.url}</p>
+          <p>Likes: {blog.likes}</p>
+          {likeButton()}
+          {deleteButton()}
+        </div>
       </div>
-    </div>
   )
 }
 

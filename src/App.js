@@ -21,9 +21,6 @@ const App = () => {
     blogService
       .getAll()
       .then((initialBlogs) => {
-        // if(initialBlogs.length === 0){
-
-        // }
         setBlogs(initialBlogs)
       })
       .catch((err) => {
@@ -95,6 +92,7 @@ const App = () => {
         )
       })
       .catch((err) => {
+        console.log(err);
         setNotify({ success: false, message: 'Blog like not successful' })
         notifyTimer()
       })
@@ -159,7 +157,7 @@ const App = () => {
         {user === null ? loginForm() : blogForm()}
         <div id="blog-list">
           {blogs
-            .sort((a, b) => a.likes - b.likes)
+            .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog
                 user={user}

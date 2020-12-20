@@ -24,7 +24,7 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
     if (user) {
       if (user.username === blog.user.username) {
         return (
-          <button onClick={performDelete} title="Delete blog">
+          <button id="like-button" onClick={performDelete} title="Delete blog">
             Delete
           </button>
         )

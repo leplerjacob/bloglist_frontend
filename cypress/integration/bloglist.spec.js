@@ -44,13 +44,12 @@ describe('bloglist', function () {
     cy.get('form').contains('Create Blog').click()
   })
 
-  describe.only('start page fresh and logged out', function () {
+  describe('start page fresh and logged out', function () {
     it('log in', function () {
       localStorage.clear()
       cy.visit('http://localhost:3000')
     })
-    it('any user can like a blog', function () {})
-    it('user who created blog can delete it', function () {
+    it('user who created blog can delete it. Cannot delete other user-created blog', function () {
       cy.addUser({ username: 'joe123', name: 'Joe Schmoe', password: 'joe123' })
       cy.login({ username: 'joe123', password: 'joe123' }).then(({ body }) => {
         const token = body.token
@@ -64,12 +63,61 @@ describe('bloglist', function () {
         cy.addBlog({ blog, token })
       })
       cy.visit('http://localhost:3000')
-      cy.get('#blog-list').contains('5 Advanced JavaScript Techniques You Should Know').parent().contains('Show').click()
-      cy.get('#blog-list').contains('5 Advanced JavaScript Techniques You Should Know').parent().contains('Delete').click()
+      cy.get('#blog-list')
+        .contains('Canonical string reduction')
+        .parent()
+        .contains('Show')
+        .click()
+      cy.get('#blog-list')
+        .contains('Canonical string reduction')
+        .parent()
+        .contains('Delete')
+      cy.get('#blog-list')
+        .contains('TDD harms architecture')
+        .parent()
+        .contains('Show')
+        .click()
+      cy.get('#blog-list')
+        .contains('TDD harms architecture')
+        .parent()
+        .contains('Delete')
+        .should('have.attr', 'disabled')
     })
-
-    // it('ensure the blogs are ordered according to likes', function() {
-
-    // })
+    it('any user can like a blog', function () {
+      cy.visit('http://localhost:3000')
+      cy.get('#blog-list')
+        .contains('TDD harms architecture')
+        .parent()
+        .contains('Show')
+        .click()
+      cy.get('#blog-list')
+        .contains('TDD harms architecture')
+        .parent()
+        .contains(/^Like$/)
+        .click()
+    })
+    describe('Order of likes', function () {
+      it('checks blog list order descends by number of likes', function () {
+        cy.get('html')
+          .find('#blog-list')
+          .find('.card.blog')
+          .then((blogs) => {
+            let likeArray = []
+            Object.values(blogs).map((el) => {
+              if (el.nodeName === 'DIV') {
+                likeArray.push(
+                  Number(
+                    el.childNodes[3].childNodes[1].textContent.split(' ')[1]
+                  )
+                )
+              }
+            })
+            return !!likeArray.reduce(
+              (n, item) => n !== false && item <= n && item
+            )
+          })
+          .should('eq', true)
+      })
+    })
   })
 })

@@ -157,7 +157,7 @@ const App = () => {
       {notify && <Notification props={notify} />}
       <div className="front">
         {user === null ? loginForm() : blogForm()}
-        <div>
+        <div id="blog-list">
           {blogs
             .sort((a, b) => a.likes - b.likes)
             .map((blog) => (

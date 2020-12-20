@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 
-const LoginForm = ({handleSubmit}) => {
+const LoginForm = ({ handleSubmit }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const submitLogin =(e) => {
+  const submitLogin = (e) => {
     e.preventDefault()
-    handleSubmit({username, password})
+    handleSubmit({ username, password })
   }
 
   return (
@@ -15,6 +15,7 @@ const LoginForm = ({handleSubmit}) => {
       <div>
         username
         <input
+          id="login-username"
           type="text"
           value={username}
           name="Username"
@@ -24,6 +25,7 @@ const LoginForm = ({handleSubmit}) => {
       <div>
         password
         <input
+          id="login-password"
           type="password"
           value={password}
           name="Password"
